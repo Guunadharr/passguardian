@@ -28,6 +28,9 @@ class _StorageScreenState extends State<StorageScreen> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _notesController = TextEditingController();
+  TextEditingController _additionalPasswordController = TextEditingController();
+
+  String _selectedCategory = 'Mail'; //Default Category
 
   Future<void> _loadDataFromLocal() async {
     Map<String, String> data = await StorageService.loadDataFromLocal();
@@ -59,7 +62,30 @@ class _StorageScreenState extends State<StorageScreen> {
             padding: EdgeInsets.all(15),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      borderRadius: BorderRadius.circular(10)),
+                  child: DropdownButton<String>(
+                    value: _selectedCategory,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedCategory = newValue!;
+                      });
+                    },
+                    items: ['Mail', 'Bank Account']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SizedBox(height: 20),
                 Container(
                   child: Column(
                     children: [
@@ -73,15 +99,24 @@ class _StorageScreenState extends State<StorageScreen> {
                       CustomTextField(
                         obscureText: false,
                         controller: _emailController,
-                        hintTextt: 'Email',
+                        hintTextt: 'Username/Email/Mobile',
                       ),
                       SizedBox(height: 20),
                       // Password textfield
                       CustomTextField(
+                        showReplayButton: true,
                         onSuffixIconTapped: () {},
                         controller: _passwordController,
                         hintTextt: 'Password',
                       ),
+                      SizedBox(height: 20),
+                      if (_selectedCategory ==
+                          'Bank Account') // Show additional password field for Bank Account
+
+                        CustomTextField(
+                          controller: _additionalPasswordController,
+                          hintTextt: 'Additional Password',
+                        ),
                       SizedBox(height: 20),
                       // Notes TextField
                       ClipRRect(
